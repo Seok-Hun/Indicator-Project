@@ -1,0 +1,60 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Indicators:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Indicators_jar</output-path>
+    <root id="archive" name="Indicators.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="Indicators.main" />
+      <element id="directory" name="lib">
+        <element id="library" level="project" name="Gradle: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" />
+        <element id="library" level="project" name="Gradle: dev.failsafe:failsafe:3.3.2" />
+        <element id="library" level="project" name="Gradle: io.opentelemetry:opentelemetry-api-incubator:1.40.0-alpha" />
+        <element id="library" level="project" name="Gradle: io.opentelemetry:opentelemetry-sdk-common:1.40.0" />
+        <element id="library" level="project" name="Gradle: io.opentelemetry:opentelemetry-sdk-extension-autoconfigure:1.40.0" />
+        <element id="library" level="project" name="Gradle: io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi:1.40.0" />
+        <element id="library" level="project" name="Gradle: io.opentelemetry.semconv:opentelemetry-semconv:1.25.0-alpha" />
+        <element id="library" level="project" name="Gradle: io.opentelemetry:opentelemetry-exporter-logging:1.40.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-chrome-driver:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-chromium-driver:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.junit.jupiter:junit-jupiter-params:5.9.1" />
+        <element id="library" level="project" name="Gradle: org.opentest4j:opentest4j:1.2.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-api:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.junit.platform:junit-platform-engine:1.9.1" />
+        <element id="library" level="project" name="Gradle: org.junit.platform:junit-platform-commons:1.9.1" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-devtools-v125:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-http:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-remote-driver:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-manager:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-edge-driver:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-devtools-v126:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-java:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-ie-driver:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-os:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-json:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-firefox-driver:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-devtools-v127:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-devtools-v85:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-safari-driver:4.23.0" />
+        <element id="library" level="project" name="Gradle: org.junit.jupiter:junit-jupiter:5.9.1" />
+        <element id="library" level="project" name="Gradle: io.opentelemetry:opentelemetry-sdk:1.40.0" />
+        <element id="library" level="project" name="Gradle: com.google.guava:guava:33.2.1-jre" />
+        <element id="library" level="project" name="Gradle: io.opentelemetry:opentelemetry-sdk-logs:1.40.0" />
+        <element id="library" level="project" name="Gradle: io.opentelemetry:opentelemetry-context:1.40.0" />
+        <element id="library" level="project" name="Gradle: org.checkerframework:checker-qual:3.42.0" />
+        <element id="library" level="project" name="Gradle: net.bytebuddy:byte-buddy:1.14.18" />
+        <element id="library" level="project" name="Gradle: com.google.code.findbugs:jsr305:3.0.2" />
+        <element id="library" level="project" name="Gradle: com.google.errorprone:error_prone_annotations:2.26.1" />
+        <element id="library" level="project" name="Gradle: org.seleniumhq.selenium:selenium-support:4.23.0" />
+        <element id="library" level="project" name="Gradle: io.opentelemetry:opentelemetry-sdk-trace:1.40.0" />
+        <element id="library" level="project" name="Gradle: io.opentelemetry:opentelemetry-sdk-metrics:1.40.0" />
+        <element id="library" level="project" name="Gradle: org.apache.commons:commons-exec:1.4.0" />
+        <element id="library" level="project" name="Gradle: com.google.guava:failureaccess:1.0.2" />
+        <element id="library" level="project" name="Gradle: com.google.auto.service:auto-service-annotations:1.1.1" />
+        <element id="library" level="project" name="Gradle: org.junit.jupiter:junit-jupiter-engine:5.9.1" />
+        <element id="library" level="project" name="Gradle: org.junit.jupiter:junit-jupiter-api:5.9.1" />
+        <element id="library" level="project" name="Gradle: io.opentelemetry:opentelemetry-api:1.40.0" />
+      </element>
+    </root>
+  </artifact>
+</component>
