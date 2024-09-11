@@ -64,15 +64,15 @@ public class Indicators {
         String baseUrl = "https://www.instagram.com/accounts/login/";
         driver.get(baseUrl);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("username")));
-        driver.findElement(By.name("username")).sendKeys("archiveofdimple");
-        driver.findElement(By.name("password")).sendKeys("xupp0rter_");
+        driver.findElement(By.name("username")).sendKeys("aafc.co.kr");
+        driver.findElement(By.name("password")).sendKeys("aafc1208");
         WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button._acan._acap._acas._aj1-._ap30")));
         btn.click();
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()=\"나중에 하기\"]"))).click();
         } catch (NoSuchElementException ignored){}
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[6]/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/button[2]"))).click();
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[2]/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/button[2]"))).click();
         } catch (NoSuchElementException ignored){}
 
         for(String point:pointList){
