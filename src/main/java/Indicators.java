@@ -73,7 +73,7 @@ public class Indicators {
         } catch (NoSuchElementException ignored){}
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[2]/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/button[2]"))).click();
-        } catch (NoSuchElementException ignored){}
+        } catch (Exception ignored){}
 
         for(String point:pointList){
             String[] pointSplit = point.split(" ");
