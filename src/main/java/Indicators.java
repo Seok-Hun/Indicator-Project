@@ -22,30 +22,6 @@ public class Indicators {
     private static final String RESOURCE_FILE_PATH = "AAFC SNS 경로.txt";
     private static final String RESULT_FILE_PATH = "결과.txt";
 
-    // 지점 리스트 읽기
-    private static List<String> ListRead() throws IOException {
-        String line;
-        Path path = Paths.get(RESOURCE_FILE_PATH);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path.toAbsolutePath().toString()),StandardCharsets.UTF_8));
-        ArrayList<String> resultList = new ArrayList<>();
-        while((line = reader.readLine()) != null){
-            resultList.add(line);
-        }
-        return resultList;
-    }
-
-    // 당월과 게시글 게시 월 비교
-    private static boolean checkDate(String dateStr) throws ParseException {
-        // 문자열 날짜 변환
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일");
-        LocalDate postDate = LocalDate.parse(dateStr, formatter);
-
-        // 현재 날짜
-        LocalDate now = LocalDate.now();
-
-        return postDate.getMonthValue() == now.getMonthValue() && postDate.getYear() == now.getYear();
-    }
-
     public static void main(String[] args) throws IOException {
 
         System.setProperty("webdriver.chrome.driver",WEB_DRIVER_PATH);
@@ -137,5 +113,29 @@ public class Indicators {
         }
         writer.close();
         driver.close();
+    }
+
+    // 지점 리스트 읽기
+    private static List<String> ListRead() throws IOException {
+        String line;
+        Path path = Paths.get(RESOURCE_FILE_PATH);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path.toAbsolutePath().toString()),StandardCharsets.UTF_8));
+        ArrayList<String> resultList = new ArrayList<>();
+        while((line = reader.readLine()) != null){
+            resultList.add(line);
+        }
+        return resultList;
+    }
+
+    // 당월과 게시글 게시 월 비교
+    private static boolean checkDate(String dateStr) throws ParseException {
+        // 문자열 날짜 변환
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일");
+        LocalDate postDate = LocalDate.parse(dateStr, formatter);
+
+        // 현재 날짜
+        LocalDate now = LocalDate.now();
+
+        return postDate.getMonthValue() == now.getMonthValue() && postDate.getYear() == now.getYear();
     }
 }
