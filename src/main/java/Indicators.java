@@ -1,15 +1,18 @@
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -19,8 +22,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class Indicators {
-    private static final String RESOURCE_FILE_PATH = "AAFC SNS 경로.txt";
-    private static final String RESULT_FILE_PATH = "결과.txt";
+    private static final String RESOURCE_FILE_PATH = "AAFC SNS 경로.xlsx";
+    private static final String[] POINT_INFO = {"지점명", "당월 게시글", "팔로워", "좋아요_평균", "댓글_평균", "참여도"};
 
     public static void main(String[] args) throws IOException {
 
@@ -28,23 +31,37 @@ public class Indicators {
 
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
+//        options.addArguments("--headless");
+        options.addArguments("--disable-blink-features=AutomationControlled");
 
         ChromeDriver driver = new ChromeDriver();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        Path path = Paths.get(RESULT_FILE_PATH);
-        PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(path.toAbsolutePath().toString(), false), StandardCharsets.UTF_8));
 
-        writer.println(String.format("%-8s %-8s %-8s %-8s %-8s %-8s", "지점명", "당월 게시글", "팔로워", "좋아요_평균", "댓글_평균", "참여도"));
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Indicator");
+        Row row = sheet.createRow(0);
 
-        List<String> pointList = indicators.ListRead();
+        for (int i = 0; i < POINT_INFO.length; i++) {
+            Cell cell = row.createCell(i);
+            cell.setCellValue(POINT_INFO[i]);
+        }
+
+        LinkedHashMap<String,String> pointList = indicators.ListRead();
 
         indicators.InstagramLogin(driver, wait);
 
-        for (String point : pointList) {
-            indicators.WritePointInfo(point, driver, wait, writer);
+        AtomicInteger rowIndex = new AtomicInteger(0);
+        pointList.forEach((key,value)->indicators.WritePointInfo(key, value, driver, wait, sheet.createRow(rowIndex.incrementAndGet())));
+
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+        try (FileOutputStream file = new FileOutputStream(now.format(formatter) + "-결과.xlsx")) {
+            workbook.write(file);
         }
-        writer.close();
-        driver.close();
+
+        workbook.close();
+        driver.quit();
     }
 
     private void InstagramLogin(ChromeDriver driver, WebDriverWait wait) {
@@ -66,20 +83,23 @@ public class Indicators {
         }
     }
 
-    private void WritePointInfo(String point, ChromeDriver driver, WebDriverWait wait, PrintWriter writer) {
-        String[] pointSplit = point.split(" ");
+    private void WritePointInfo(String pointName, String pointUrl, ChromeDriver driver, WebDriverWait wait, Row row) {
         // 프로필 정보 가져오기
-        driver.get(pointSplit[1]);
+        driver.get(pointUrl);
 
         int[] iterateBoards = IterateBoards(driver, wait);
-        PointInfo pointInfo = new PointInfo.PointInfoBuilder()
-                .pointName(pointSplit[0])
+        String[] pointInfo = new PointInfo.PointInfoBuilder()
+                .pointName(pointName)
                 .monthlyPosts(iterateBoards[2])
                 .likesAve(iterateBoards[0])
                 .commentsAve(iterateBoards[1])
                 .followers(iterateBoards[3])
-                .build();
-        writer.println(pointInfo);
+                .build()
+                .toArray();
+
+        for (int i = 0; i < pointInfo.length; i++) {
+            row.createCell(i).setCellValue(pointInfo[i]);
+        }
     }
 
     private int[] IterateBoards(ChromeDriver driver, WebDriverWait wait) {
@@ -98,7 +118,6 @@ public class Indicators {
             );
             // 게시글 순회
             while (i > 0) {
-                Thread.sleep(3000);
                 for (int j = 1; j <= 3; j++) {
                     // 게시물 선택
                     WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(String.format("//div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/section/main/div/div[2]/div/div[%d]/div[%d]/a", i, j))));
@@ -133,20 +152,28 @@ public class Indicators {
                 }
                 i++;
             }
-        } catch (TimeoutException | InterruptedException ignored) {
+        } catch (TimeoutException ignored) {
         }
         return result;
     }
 
     // 지점 리스트 읽기
-    private List<String> ListRead() throws IOException {
-        String line;
-        Path path = Paths.get(RESOURCE_FILE_PATH);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path.toAbsolutePath().toString()), StandardCharsets.UTF_8));
-        ArrayList<String> resultList = new ArrayList<>();
-        while ((line = reader.readLine()) != null) {
-            resultList.add(line);
+    private LinkedHashMap<String, String> ListRead() throws IOException {
+        FileInputStream fileInputStream = new FileInputStream(RESOURCE_FILE_PATH);
+        Workbook workbook = new XSSFWorkbook(fileInputStream);
+        Sheet sheet = workbook.getSheetAt(0);
+        LinkedHashMap<String, String> resultList = new LinkedHashMap<>();
+
+        for(Row row : sheet){
+            if(row.getRowNum()==0){
+                continue;
+            }
+            resultList.put(
+                    row.getCell(0).getStringCellValue(),
+                    row.getCell(1).getStringCellValue()
+            );
         }
+
         return resultList;
     }
 

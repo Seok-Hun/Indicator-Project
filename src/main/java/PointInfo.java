@@ -43,6 +43,17 @@ public class PointInfo {
         return String.format("%-8s %-8d %-8d %-8d %-8d %-8.2f",pointName,monthlyPosts,followers,likesAve,commentsAve,participation*100);
     }
 
+    public String[] toArray() {
+        return new String[]{
+                pointName,
+                String.valueOf(monthlyPosts),
+                String.valueOf(followers),
+                String.valueOf(likesAve),
+                String.valueOf(commentsAve),
+                String.format("%.2f", participation*100)
+        };
+    }
+
     public static class PointInfoBuilder{
         private String pointName;
         private int monthlyPosts;
