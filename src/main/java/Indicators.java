@@ -35,9 +35,10 @@ public class Indicators {
         options.addArguments("--disable-blink-features=AutomationControlled");
 
         ChromeDriver driver = new ChromeDriver();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-
         Workbook workbook = new XSSFWorkbook();
+        Runtime.getRuntime().addShutdownHook(new ShutDownHook(driver, workbook));
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         Sheet sheet = workbook.createSheet("Indicator");
         Row row = sheet.createRow(0);
 
