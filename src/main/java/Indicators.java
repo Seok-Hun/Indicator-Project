@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -76,11 +78,11 @@ public class Indicators {
         btn.click();
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()=\"나중에 하기\"]"))).click();
-        } catch (NoSuchElementException ignored) {
+        } catch (NoSuchElementException | TimeoutException ignored) {
         }
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[2]/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/button[2]"))).click();
-        } catch (Exception ignored) {
+        } catch (NoSuchElementException | TimeoutException ignored) {
         }
     }
 
@@ -165,8 +167,8 @@ public class Indicators {
         Sheet sheet = workbook.getSheetAt(0);
         LinkedHashMap<String, String> resultList = new LinkedHashMap<>();
 
-        for(Row row : sheet){
-            if(row.getRowNum()==0){
+        for (Row row : sheet) {
+            if (row.getRowNum() == 0) {
                 continue;
             }
             resultList.put(
