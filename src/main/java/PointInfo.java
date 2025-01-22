@@ -81,7 +81,6 @@ public class PointInfo {
             try {
                 this.likesAve = likeSum / monthlyPosts;
             } catch (ArithmeticException e){
-                System.out.println(this.pointName+" 좋아요 수 계산 에러");
                 this.likesAve = 0;
             }
             return this;
@@ -91,7 +90,6 @@ public class PointInfo {
             try {
                 this.commentsAve = commentSum / monthlyPosts;
             } catch (ArithmeticException e){
-                System.out.println(this.pointName+" 댓글 수 계산 에러");
                 this.commentsAve = 0;
             }
             return this;

@@ -1,11 +1,15 @@
+import java.awt.*;
 import java.io.*;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -16,6 +20,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.*;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -26,6 +31,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class Indicators {
     private static final String RESOURCE_FILE_PATH = "AAFC SNS 경로.xlsx";
     private static final String[] POINT_INFO = {"지점명", "당월 게시글", "팔로워", "좋아요_평균", "댓글_평균", "참여도"};
+    private static final int MAX_THREAD = 3;
 
     public static void main(String[] args) throws IOException {
 
@@ -36,7 +42,7 @@ public class Indicators {
 //        options.addArguments("--headless");
         options.addArguments("--disable-blink-features=AutomationControlled");
 
-        ChromeDriver driver = new ChromeDriver();
+        ChromeDriver driver = new ChromeDriver(options);
         Workbook workbook = new XSSFWorkbook();
         Runtime.getRuntime().addShutdownHook(new ShutDownHook(driver, workbook));
 
@@ -49,12 +55,32 @@ public class Indicators {
             cell.setCellValue(POINT_INFO[i]);
         }
 
-        LinkedHashMap<String,String> pointList = indicators.ListRead();
+        LinkedHashMap<String, String> pointList = indicators.ListRead();
 
         indicators.InstagramLogin(driver, wait);
 
+        Set<Cookie> cookies = driver.manage().getCookies();
+        driver.quit();
+
         AtomicInteger rowIndex = new AtomicInteger(0);
-        pointList.forEach((key,value)->indicators.WritePointInfo(key, value, driver, wait, sheet.createRow(rowIndex.incrementAndGet())));
+        List<CompletableFuture<Void>> completableFutures = new ArrayList<>();
+        ExecutorService executor = Executors.newFixedThreadPool(MAX_THREAD);
+        pointList.forEach((key, value) -> {
+            completableFutures.add(CompletableFuture.runAsync(() -> {
+                System.out.println("Thread : "+Thread.currentThread().getName());
+                System.out.println("지점명 : "+key);
+                ChromeDriver indicatorDriver = new ChromeDriver(options);
+                Runtime.getRuntime().addShutdownHook(new ShutDownHook(indicatorDriver, workbook));
+                WebDriverWait indicatorWait = new WebDriverWait(indicatorDriver, Duration.ofSeconds(5));
+                indicators.WritePointInfo(cookies, key, value, indicatorDriver, indicatorWait, sheet.createRow(rowIndex.incrementAndGet()));
+                indicatorDriver.quit();
+                System.out.println("indicator driver 종료");
+            }, executor));
+        });
+
+        executor.shutdown();
+
+        CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0])).join();
 
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -86,9 +112,13 @@ public class Indicators {
         }
     }
 
-    private void WritePointInfo(String pointName, String pointUrl, ChromeDriver driver, WebDriverWait wait, Row row) {
+    private void WritePointInfo(Set<Cookie> cookies, String pointName, String pointUrl, ChromeDriver driver, WebDriverWait wait, Row row) {
         // 프로필 정보 가져오기
         driver.get(pointUrl);
+        for (Cookie cookie : cookies) {
+            driver.manage().addCookie(cookie);
+        }
+        driver.navigate().refresh();
 
         int[] iterateBoards = IterateBoards(driver, wait);
         String[] pointInfo = new PointInfo.PointInfoBuilder()
@@ -124,12 +154,10 @@ public class Indicators {
                 for (int j = 1; j <= 3; j++) {
                     // 게시물 선택
                     WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(String.format("//div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/section/main/div/div[2]/div/div[%d]/div[%d]/a", i, j))));
-                    // 현재 게시물이 고정 게시물일 경우 다음 게시물로 이동
                     try {
-                        WebElement element1 = driver.findElement(By.xpath(String.format("//div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/section/main/div/div[2]/div/div[%d]/div[%d]/a//*[local-name()='svg' and @aria-label=\"고정 게시물\"]", i, j)));
-                        if (element1.isDisplayed()) {
-                            continue;
-                        }
+                        // 현재 게시물이 고정 게시물일 경우 다음 게시물로 이동
+                        WebElement fixedElement = driver.findElement(By.xpath(String.format("//div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/section/main/div/div[2]/div/div[%d]/div[%d]/a//*[local-name()='svg' and @aria-label=\"고정 게시물\"]", i, j)));
+                        continue;
                     } catch (NoSuchElementException ignored) {
                     }
                     // 선택한 게시물 열람
