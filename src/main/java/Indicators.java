@@ -72,8 +72,8 @@ public class Indicators {
         String baseUrl = "https://www.instagram.com/accounts/login/";
         driver.get(baseUrl);
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("username")));
-        driver.findElement(By.name("username")).sendKeys("aafc.co.kr");
-        driver.findElement(By.name("password")).sendKeys("aafc1208");
+        driver.findElement(By.name("username")).sendKeys("is_indicator");
+        driver.findElement(By.name("password")).sendKeys("rkdtjrgns#3");
         WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button._acan._acap._acas._aj1-._ap30")));
         btn.click();
         try {
@@ -112,51 +112,68 @@ public class Indicators {
         int[] result = {0, 0, 0, 0};
         int i = 1;
 
+        System.out.println("--시작 try-catch--");
         try {
+            System.out.println("----시작 팔로우 조회----");
             result[3] = Integer.parseInt(
                     wait.until(
                             ExpectedConditions.visibilityOfElementLocated(
                                     By.xpath("//div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/section/main/div/header/section[3]/ul/li[2]/div/a/span/span"))
                     ).getText()
             );
+            System.out.println("----종료 팔로우 조회----");
+            System.out.println("----시작 게시글 순회----");
             // 게시글 순회
             while (i > 0) {
+                System.out.println("------시작 while문------");
                 for (int j = 1; j <= 3; j++) {
+                    System.out.println("------시작 for문------");
+                    System.out.println("--------시작 게시물 선택--------");
                     // 게시물 선택
-                    WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(String.format("//div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/section/main/div/div[2]/div/div[%d]/div[%d]/a", i, j))));
+                    WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(String.format("//div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/section/main/div/div[2]/div/div/div[%d]/div[%d]/a", i, j))));
+                    System.out.println("--------종료 게시물 선택--------");
                     // 현재 게시물이 고정 게시물일 경우 다음 게시물로 이동
                     try {
-                        WebElement element1 = driver.findElement(By.xpath(String.format("//div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/section/main/div/div[2]/div/div[%d]/div[%d]/a//*[local-name()='svg' and @aria-label=\"고정 게시물\"]", i, j)));
-                        if (element1.isDisplayed()) {
-                            continue;
-                        }
+                        System.out.printf("--------게시글 번호 : %d %d--------%n",i,j);
+                        driver.findElement(By.xpath(String.format("//div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/section/main/div/div[2]/div/div/div[%d]/div[%d]/a/div[2]/div/div/*[@aria-label=\"고정 게시물\"]",i,j)));
+                        System.out.println("--------고정 게시물 찾음--------");
+                        continue;
                     } catch (NoSuchElementException ignored) {
+                        System.out.println("!!!!!!!!고정 게시물 못찾음!!!!!!!!");
                     }
                     // 선택한 게시물 열람
                     element.click();
+                    System.out.printf("--------클릭 게시글 : %d %d--------%n", i, j);
                     // 게시물의 게시 날짜 확인 시 당월 게시물이 아닌 경우 게시글 순회 탈출
                     String timeString = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("time.x1p4m5qa"))).getAttribute("title");
                     if (!CheckDate(timeString)) {
                         i = -1;
+                        System.out.println("--------이번달 끝남--------");
                         break;
                     }
+                    System.out.println("--------게시물 나가기--------");
                     // 게시물 나가기
                     WebElement until = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.x160vmok.x10l6tqk.x1eu8d0j.x1vjfegm")));
                     until.click();
+                    System.out.printf("--------마우스 올림 : %d %d--------%n",i,j);
                     // 해당 게시물의 좋아요, 댓글 수를 알기 위해 마우스 포인터 올리는 작업
                     actions.moveToElement(element).perform();
                     // 인스타 게시물의 index는 최대 12까지 있으므로 12번째 게시물에 도달할 경우 무한 순회를 방지하기 위해 순회 순서를 하나 뺀다.
                     if (i > 11) {
                         i--;
                     }
-                    result[0] += Integer.parseInt(wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(String.format("//div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/section/main/div/div[2]/div/div[%d]/div[%d]/a/div[3]/ul/li[1]/span[1]/span", i, j)))).getText());
-                    result[1] += Integer.parseInt(wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(String.format("//div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/section/main/div/div[2]/div/div[%d]/div[%d]/a/div[3]/ul/li[2]/span[1]/span", i, j)))).getText());
+                    result[0] += Integer.parseInt(wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(String.format("//div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/section/main/div/div[2]/div/div/div[%d]/div[%d]/a/div[3]/ul/li[1]/span[1]/span", i, j)))).getText());
+                    result[1] += Integer.parseInt(wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(String.format("//div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/section/main/div/div[2]/div/div/div[%d]/div[%d]/a/div[3]/ul/li[2]/span[1]/span", i, j)))).getText());
                     result[2]++;
-                }
+                    System.out.println("------종료 for문------");                }
                 i++;
+                System.out.println("------종료 while문------");
             }
+            System.out.println("----종료 게시글 순회----");
         } catch (TimeoutException ignored) {
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!타임아웃 체크");
         }
+        System.out.println("--종료 try-catch--");
         return result;
     }
 
